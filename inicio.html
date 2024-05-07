@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Lugares</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 4px sólido #388E3C;
+        }
+        main {
+            padding: 30px;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        main:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Estilos para formularios */
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px sólido #ccc;
+            border-radius: 8px;
+            transition: border-color 0.3s ease-in-out;
+        }
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        /* Estilos para botones */
+        .button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 12px 25px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .button:hover {
+            background-color: #388E3C;
+        }
+
+        /* Estilos para los lugares */
+        .places {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .place {
+            background-color: #fff;
+            border: 1px sólido #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            width: calc(33.333% - 20px);
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .place:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .place h3 {
+            margin: 10px 0;
+            font-size: 20px;
+            color: #333;
+        }
+        .place p {
+            font-size: 16px;
+            color: #666;
+        }
+        .place .button {
+            font-size: 16px;
+            padding: 10px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .place .button:hover {
+            background-color: #388E3C;
+        }
+    </style>
+
+</head>
+<body>
+    <header>
+        Catálogo de Lugares
+    </header>
+    <main>
+        <div class="form-group">
+            <label for="days">¿Cuántos días te vas a quedar?</label>
+            <input type="number" id="days" name="days" min="1" required>
+        </div>
+
+        <div class="places" id="places">
+            <!-- Lugares se mostrarán aquí -->
+        </div>
+        
+        <button class="button" onclick="generateCatalog()">Generar Catálogo</button>
+    </main>
+
+    <script>
+        
+        function generateCatalog() {
+            const days = parseInt(document.getElementById('days').value);
+
+            if (isNaN(days) || days < 1) {
+                alert("Por favor, introduce un número válido de días.");
+                return;
+            }
+
+            const places = [
+                { name: "Piedra Movediza", description: "lugar con buenas vistas.", lat: -37.30944, lng: -59.16962 },
+                { name: "Cerro Centinela", description: "otro lugar con buenas vistas.", lat: -37.35492, lng: -59.17267 },
+                { name: "dique", description: "lindo lugar para tomar mates y pasar el dia.", lat: -37.34287, lng: -59.13213 },
+                { name: "museo de autos", description: "muy buenos autos antiguos.", lat: -37.32494, lng: -59.14477 },
+            ];
+
+            const selectedPlaces = places.slice(0, days);
+            const placesContainer = document.getElementById('places');
+
+            // Limpia el contenedor antes de agregar nuevos lugares
+            placesContainer.innerHTML = "";
+
+            selectedPlaces.forEach(place => {
+                const placeElement = document.createElement("div");
+                placeElement.className = "place";
+
+                const placeHTML = `
+                    <h3>${place.name}</h3>
+                    <p>${place.description}</p>
+                    <button class="button" onclick="selectPlace('${place.name}', ${place.lat}, ${place.lng})">Ver en el mapa</button>
+                `;
+
+                placeElement.innerHTML = placeHTML;
+                placesContainer.appendChild(placeElement);
+            });
+        }
+
+        function selectPlace(name, lat, lng) {
+            // Limpia cualquier ruta anterior guardada
+            localStorage.removeItem('selectedRoute');
+
+            // Guarda el nuevo lugar seleccionado
+            localStorage.setItem('selectedPlace', JSON.stringify({ name, lat, lng }));
+
+            // Redirige a la página del mapa
+            window.location.href = 'mapa.html';
+        }
+    </script>
+</body>
+</html>
